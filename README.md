@@ -26,3 +26,8 @@ python src/train.py -c
 ```
 python src/predict.py
 ```
+
+### Run prediction from sample images (sample image file can be found in folder /sample)
+```
+python src/predict.py -f sample/a.png
+```
