@@ -1,27 +1,20 @@
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
-from tensorflow.keras.models import load_model
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.datasets.fashion_mnist import load_data
+import configparser
 
-def load_image(filename):
-	# load the image
-	img = load_img(filename, grayscale=True, target_size=(28, 28))
-	# convert to array
-	img = img_to_array(img)
-	# reshape into a single sample with 1 channel
-	img = img.reshape(1, 28, 28, 1)
-	# prepare pixel data
-	img = img.astype('float32')
-	img = img / 255.0
-	return img
+(_, _), (test_images, test_labels) = load_data()
+test_images = test_images / 255
 
-# load an image and predict the class
-def run_example():
-	# load the image
-	img = load_image('sample_image.png')
-	# load model
-	model = load_model('final_model.h5')
-	# predict the class
-	result = model.predict_classes(img)
-	print(result[0])
+def predict_model(model):
+    result = model.predict_classes(test_images[0:10])
+    print("predicted result : ", result)
+    print("actual result : ", test_labels[0:10])
 
-if __name__=='__main__':
-    run_example()
+if __name__=="__main__":
+    config = configparser.ConfigParser()
+    config.read("src/.env")
+    
+    with tf.compat.v1.Session():
+        model = keras.models.load_model(config.get("Inference", "model_filename"))
+        predict_model(model)
