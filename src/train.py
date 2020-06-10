@@ -7,6 +7,7 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 from tensorflow.keras.datasets.fashion_mnist import load_data
 import configparser
 import argparse
+import matplotlib.pyplot as plt
 
 def load_dataset():
     (train_images, train_labels), (test_images, test_labels) = load_data()
@@ -34,11 +35,24 @@ def create_model(config):
     return model
 
 def train(model, config, train_images, train_labels, test_images, test_labels, callbacks):
-    model.fit(train_images, train_labels, batch_size=32, verbose=1,
-              epochs=config.getint("HyperParam", "epochs"), callbacks=callbacks,
-              validation_data=(test_images, test_labels))
-    test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=0)
-    print('\nModel accuracy:', test_acc)
+    history = model.fit(train_images, train_labels, batch_size=32, verbose=1,
+                        epochs=config.getint("HyperParam", "epochs"), callbacks=callbacks,
+                        validation_data=(test_images, test_labels))
+    return history
+
+def show_plot(history, metric_name):
+    plt.plot(history.history[metric_name])
+    plt.plot(history.history['val_'+metric_name])
+    plt.title('model ' + metric_name)
+    plt.ylabel(metric_name)
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
+
+def visualize(history):
+    show_plot(history, 'acc')
+    show_plot(history, 'loss')
+    show_plot(history, 'precision')
 
 if __name__=="__main__":
     config = configparser.ConfigParser()
@@ -64,5 +78,7 @@ if __name__=="__main__":
         es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=config.getint("HyperParam", "early_stopping_patience"))
         mc = ModelCheckpoint(config.get("Training", "checkpoint_filename"), save_weights_only=True)
         callbacks=[es, mc]
-        train(model, config, train_images, train_labels, test_images, test_labels, callbacks)
+        history = train(model, config, train_images, train_labels, test_images, test_labels, callbacks)
         model.save(config.get("Inference", "model_filename"))
+        visualize(history)
+        

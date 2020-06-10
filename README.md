@@ -31,3 +31,11 @@ python src/predict.py
 ```
 python src/predict.py -f sample/a.png
 ```
+
+## Model Summary
+- Model type : Sequential
+- Stopping time : early stopping, based on the improvement of `validation loss`, with patience of 5, and max epochs of 100 (defined in src/.env)
+- Overfitting analysis : based on the plot summary of `accuracy`, `loss`, and `precision` of both training and test dataset
+- Hyperparameter choice : `learning_rate` and `momentum` (defined in src/.env)
+- Metrics : `accuracy` and `Precision`
+- Dependency : listed in requirements.txt
