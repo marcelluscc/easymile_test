@@ -30,7 +30,7 @@ def create_model(config):
 
     model.compile(optimizer=opt,
                  loss="categorical_crossentropy",
-                 metrics=['accuracy'])
+                 metrics=['accuracy', 'Precision'])
     return model
 
 def train(model, config, train_images, train_labels, test_images, test_labels, callbacks):
